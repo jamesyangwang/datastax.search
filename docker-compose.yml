@@ -1,0 +1,41 @@
+version: "3.7"
+
+services:
+
+  opscenter:
+    image: datastax/dse-opscenter
+    environment:
+      - DS_LICENSE=accept
+    ports:
+      - 8888:8888
+    networks:
+      - dse-network
+  
+  dse:
+    image: datastax/dse-server
+    environment:
+      - DS_LICENSE=accept
+    command: ["-s"]
+    links:
+      - opscenter
+    networks:
+      - dse-network
+    cap_add:
+      - IPC_LOCK
+    ulimits:
+      memlock: -1
+
+
+  studio:
+    image: datastax/dse-studio
+    environment:
+      - DS_LICENSE=accept
+    ports:
+      - 9091:9091
+    networks:
+      - dse-network
+
+networks:
+  dse-network:
+    driver: bridge
+
